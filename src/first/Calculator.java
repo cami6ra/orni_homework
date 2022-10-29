@@ -7,7 +7,7 @@ public class Calculator {
 
     //текст
     void printText(){
-        System.out.println("             Калькулятор               ");
+        System.out.println("                       Калькулятор               ");
         printStripe();
         System.out.println("Выберите операцию (введите номер), где: \n" + "1 - сложение \n" + "2 - вычитание \n" + "3 - умножение  \n" + "4 - деление");
         printStripe();
