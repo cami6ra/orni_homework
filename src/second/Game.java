@@ -6,11 +6,16 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class Game {
-    int n;
-    int dif;
-    int k;
-    int i;
-    int generated_value;
+    // заданное пользователем количество попыток
+    int givenAttempts;
+    // номер текущей попытки
+    int actualAttemptsNumber;
+    // разница между сгенерерованным числом и введенным пользователем
+    int difference;
+    //сгенерированное компьютером значение
+    int generatedValue;
+    // число пользователя
+    int guessedValue;
 
     Computer computer = new Computer();
     Scanner scan = new Scanner(System.in);
@@ -19,12 +24,17 @@ public class Game {
     void startGame() throws FileNotFoundException {
         String file = "src/second/text";
         Scanner scanner = new Scanner(new File(file));
-        i = 0;
+
         while (scanner.hasNextLine()) {
             String text = scanner.nextLine();
             System.out.println(text);
         }
+
+        //обнуляем с каждой новой игрой
+        actualAttemptsNumber = 1;
+
         getAttemptsCount();
+        generateNumber();
         play();
     }
 
@@ -32,10 +42,9 @@ public class Game {
     void getAttemptsCount() {
         System.out.print("Введи количество попыток (значение должно быть натуральным числом): ");
         try {
-            n = scan.nextInt();
-            if (n > 0) {
-                printAnswer(computer.sayFirstPhrase(n));
-                k = n;
+            givenAttempts = scan.nextInt();
+            if (givenAttempts > 0) {
+                printAnswer(computer.sayFirstPhrase(givenAttempts));
             } else {
                 System.out.println("Число должно быть натуральным. Повтори ввод.");
                 printStripe();
@@ -49,8 +58,8 @@ public class Game {
         }
     }
 
-    public String printRemainingAttempts(int k) {
-        return "Осталось попыток: " + (k - 1);
+    public String printActualAttemptsNumber(int actualAttemptsNumber) {
+        return "                                                                               Осталось попыток: " + (actualAttemptsNumber + 1);
     }
 
     //разделители в консоли
@@ -67,13 +76,12 @@ public class Game {
 
     private int generateNumber() {
         //генерация числа от 1 до 100
-        Random r = new Random();
-        generated_value = r.nextInt(100) + 1;
+//        Random r = new Random();
+//        generatedValue = r.nextInt(100) + 1;
 
-        //для тестов
-//        generated_value = 55;
-
-        return generated_value;
+//        для тестов
+        generatedValue = 55;
+        return generatedValue;
     }
 
     //спрашиваем пользователя о продолжении
@@ -81,10 +89,11 @@ public class Game {
         printAnswer(computer.sayPlayAgain());
         if (scan.hasNext()) {
             String answer = scan.next();
-
             switch (answer) {
                 case "n":
                     printAnswer(computer.sayBye());
+                    //для выхода из цикла
+                    actualAttemptsNumber = givenAttempts + 1;
                     break;
                 case "y":
                     startGame();
@@ -96,77 +105,64 @@ public class Game {
         } else System.out.println("первый if не сработал :((");
     }
 
-    void play() {
-        generateNumber();
+    void play() throws FileNotFoundException {
+        scan = new Scanner(System.in);
 
-        Scanner scan = new Scanner(System.in);
+        for (; actualAttemptsNumber <= givenAttempts; actualAttemptsNumber++) {
 
-        for (; i < n; i++) {
-
+            //выводим номер попытки
+            System.out.println(printActualAttemptsNumber(givenAttempts - actualAttemptsNumber));
             System.out.print("Введи число: ");
 
-            try {
+            if (scan.hasNextInt()) {
                 //хранит число игрока
-                int guessed_value = scan.nextInt();
+                guessedValue = scan.nextInt();
 
                 //если число попадает в отрезок [1; 100]
-                if (guessed_value > 0 && guessed_value < 101) {
-                    if (guessed_value != generated_value) {
+                if (guessedValue > 0 && guessedValue < 101) {
 
-                        //если это не первая попытка
-                        if (i > 0) {
-                            int prev_dif = dif;
-                            dif = Math.abs(guessed_value - generated_value);
+                    if (guessedValue != generatedValue) {
 
-                            // если предыдущее число было дальше загаданного
-                            if (prev_dif > dif) {
-                                System.out.println(printRemainingAttempts(k));
-                                printAnswer(computer.sayHotter());
-                            }
+                        //замена на switch
+                        switch (actualAttemptsNumber) {
+                            //первая попытка
+                            case 1:
+                                difference = Math.abs(guessedValue - generatedValue);
 
-                            //если предыдущее число так же близко, как новое
-                            else if (prev_dif == dif) {
-                                System.out.println(printRemainingAttempts(k));
-                                printAnswer(computer.saySame());
-                            }
+                                // для первой попытки - если число попадает в окрестность = 10
+                                if (difference > 10) {
+                                    printAnswer(computer.sayCold());
+                                } else {
+                                    printAnswer(computer.sayHot());
+                                }
+                                break;
 
-                            //если предыдущее число ближе к загаданному
-                            else {
-                                System.out.println(printRemainingAttempts(k));
-                                printAnswer(computer.sayColder());
-                            }
+                            //остальные попытки
+                            default:
+                                int previousDifference = difference;
+                                difference = Math.abs(guessedValue - generatedValue);
+
+                                // замена на switch
+                                switch (Double.compare(previousDifference, difference)) {
+                                    case 0:
+                                        printAnswer(computer.saySame());
+                                        break;
+                                    case 1:
+                                        printAnswer(computer.sayHotter());
+                                        break;
+                                    case -1:
+                                        printAnswer(computer.sayColder());
+                                        break;
+                                }
+                                break;
                         }
-
-                        // если первая попытка
-                        else {
-                            //выводим оставшиеся попытки
-                            System.out.println(printRemainingAttempts(k));
-
-                            //вычитаем из догадки загаданное, чтобы запомнить
-                            dif = Math.abs(guessed_value - generated_value);
-
-                            // для первой попытки - если число попадает в окрестность = 10
-                            if (dif > 10) {
-                                //довольно холодно
-                                printAnswer(computer.sayCold());
-                            } else {
-                                //довольно тепло
-                                printAnswer(computer.sayHot());
-                            }
-                        }
-
-                        //потраченная попытка вычитается из счетчика
-                        k -= 1;
-
-                        //если осталось 0 попыток - объявляем проигрыш
-                        if (k == 0) {
-                            printAnswer(computer.sayLost(generated_value));
+                        if (actualAttemptsNumber == givenAttempts) {
+                            printAnswer(computer.sayLost(generatedValue));
                             askForContinue();
                             break;
                         }
-
                     } else {
-                        printAnswer(computer.sayWon(i + 1));
+                        printAnswer(computer.sayWon(actualAttemptsNumber));
                         askForContinue();
                         break;
                     }
@@ -175,7 +171,7 @@ public class Game {
                     printStripe();
                     play();
                 }
-            } catch (Exception e) {
+            } else {
                 System.out.println("Символы и буквы недопустимы. Повтори ввод.");
                 printStripe();
                 scan.next();
