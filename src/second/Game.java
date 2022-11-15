@@ -2,7 +2,9 @@ package second;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.UnsupportedEncodingException;
 import java.util.Random;
+import java.util.ResourceBundle;
 import java.util.Scanner;
 
 public class Game {
@@ -17,11 +19,16 @@ public class Game {
     // число пользователя
     int guessedValue;
 
+    ResourceBundle rb;
+
+    Language language = new Language();
     Computer computer = new Computer();
     Scanner scan = new Scanner(System.in);
 
     //меню
-    void startGame() throws FileNotFoundException {
+    void startGame() throws FileNotFoundException, UnsupportedEncodingException {
+        rb = language.chooseLanguage();
+
         String file = "src/second/text";
         Scanner scanner = new Scanner(new File(file));
 
@@ -40,18 +47,18 @@ public class Game {
 
     // запрос на количество попыток
     void getAttemptsCount() {
-        System.out.print("Введи количество попыток (значение должно быть натуральным числом): ");
+        System.out.print(language.encodeText(rb, "attempts.request"));
         try {
             givenAttempts = scan.nextInt();
             if (givenAttempts > 0) {
-                printAnswer(computer.sayFirstPhrase(givenAttempts));
+                printAnswer(computer.sayFirstPhrase(rb, givenAttempts));
             } else {
-                System.out.println("Число должно быть натуральным. Повтори ввод.");
+                System.out.println(language.encodeText(rb, "warning.natural"));
                 printStripe();
                 getAttemptsCount();
             }
         } catch (Exception e) {
-            System.out.println("Символы и буквы недопустимы. Повтори ввод.");
+            System.out.println(language.encodeText(rb, "warning.symbol"));
             printStripe();
             scan.next();
             getAttemptsCount();
@@ -59,7 +66,7 @@ public class Game {
     }
 
     public String printActualAttemptsNumber(int actualAttemptsNumber) {
-        return "                                                                               Осталось попыток: " + (actualAttemptsNumber + 1);
+        return language.encodeText(rb, "attempts.remained") + (actualAttemptsNumber + 1);
     }
 
     //разделители в консоли
@@ -85,13 +92,13 @@ public class Game {
     }
 
     //спрашиваем пользователя о продолжении
-    public void askForContinue() throws FileNotFoundException {
-        printAnswer(computer.sayPlayAgain());
+    public void askForContinue() throws FileNotFoundException, UnsupportedEncodingException {
+        printAnswer(computer.sayPlayAgain(rb));
         if (scan.hasNext()) {
             String answer = scan.next();
             switch (answer) {
                 case "n":
-                    printAnswer(computer.sayBye());
+                    printAnswer(computer.sayBye(rb));
                     //для выхода из цикла
                     actualAttemptsNumber = givenAttempts + 1;
                     break;
@@ -99,20 +106,20 @@ public class Game {
                     startGame();
                     break;
                 default:
-                    System.out.println("Введите одно из перечисленных значений (y/n)");
+                    System.out.println(language.encodeText(rb, "warning.continue"));
                     askForContinue();
             }
         } else System.out.println("первый if не сработал :((");
     }
 
-    void play() throws FileNotFoundException {
+    void play() throws FileNotFoundException, UnsupportedEncodingException {
         scan = new Scanner(System.in);
 
         for (; actualAttemptsNumber <= givenAttempts; actualAttemptsNumber++) {
 
             //выводим номер попытки
             System.out.println(printActualAttemptsNumber(givenAttempts - actualAttemptsNumber));
-            System.out.print("Введи число: ");
+            System.out.print(language.encodeText(rb, "number.request"));
 
             if (scan.hasNextInt()) {
                 //хранит число игрока
@@ -131,9 +138,9 @@ public class Game {
 
                                 // для первой попытки - если число попадает в окрестность = 10
                                 if (difference > 10) {
-                                    printAnswer(computer.sayCold());
+                                    printAnswer(computer.sayCold(rb));
                                 } else {
-                                    printAnswer(computer.sayHot());
+                                    printAnswer(computer.sayHot(rb));
                                 }
                                 break;
 
@@ -145,34 +152,34 @@ public class Game {
                                 // замена на switch
                                 switch (Double.compare(previousDifference, difference)) {
                                     case 0:
-                                        printAnswer(computer.saySame());
+                                        printAnswer(computer.saySame(rb));
                                         break;
                                     case 1:
-                                        printAnswer(computer.sayHotter());
+                                        printAnswer(computer.sayHotter(rb));
                                         break;
                                     case -1:
-                                        printAnswer(computer.sayColder());
+                                        printAnswer(computer.sayColder(rb));
                                         break;
                                 }
                                 break;
                         }
                         if (actualAttemptsNumber == givenAttempts) {
-                            printAnswer(computer.sayLost(generatedValue));
+                            printAnswer(computer.sayLost(rb, generatedValue));
                             askForContinue();
                             break;
                         }
                     } else {
-                        printAnswer(computer.sayWon(actualAttemptsNumber));
+                        printAnswer(computer.sayWon(rb));
                         askForContinue();
                         break;
                     }
                 } else {
-                    System.out.println("Введи натуральное число от 1 до 100.");
+                    System.out.println(language.encodeText(rb, "warning.interval"));
                     printStripe();
                     play();
                 }
             } else {
-                System.out.println("Символы и буквы недопустимы. Повтори ввод.");
+                System.out.println(language.encodeText(rb, "warning.symbol"));
                 printStripe();
                 scan.next();
                 play();

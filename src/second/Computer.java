@@ -1,45 +1,49 @@
 package second;
 
+import java.util.ResourceBundle;
+
 public class Computer {
 
-    public String sayFirstPhrase(int n) {
-        return "                          «Kᴏличᴇᴄтʙᴏ пᴏпытᴏᴋ: " + n + ". Tᴘᴀть ᴄ умᴏм.»";
+    Language language = new Language();
+
+    public String sayHotter(ResourceBundle rb) {
+        return language.encodeText(rb, "phrase.hotter");
     }
 
-    public String sayHotter() {
-        return "                                            «Tᴇплᴇᴇ.»";
+    public String sayColder(ResourceBundle rb) {
+        return language.encodeText(rb, "phrase.colder");
     }
 
-    public String sayColder() {
-        return "                                           «Xᴏлᴏдʜᴇᴇ.»";
+    public String saySame(ResourceBundle rb) {
+        return language.encodeText(rb, "phrase.same");
     }
 
-    public String saySame() {
-        return "                                            «Tᴀᴋ жᴇ.»";
+    public String sayWon(ResourceBundle rb) {
+        return language.encodeText(rb, "phrase.won");
     }
 
-    public String sayWon(int i) {
-        return "                            «Пᴏздᴘᴀʙляю, ты пᴏбᴇдил. Hᴀ " + i + " пᴏпытᴋᴇ.»";
+    public String sayPlayAgain(ResourceBundle rb) {
+        return language.encodeText(rb, "phrase.restart");
     }
 
-    public String sayLost(int i) {
-        return "                     «Tы пᴘᴏигᴘᴀл. Hᴀдᴇюᴄь, ʙ гᴏлᴏᴄ. 3ᴀгᴀдᴀʜʜᴏᴇ чиᴄлᴏ: " + i + ".»";
+    public String sayHot(ResourceBundle rb) {
+        return language.encodeText(rb, "phrase.hot");
     }
 
-    public String sayPlayAgain(){
-        return "                                       «Cыгᴘᴀᴇм ᴇщё? (ʏ/ɴ)»";
+    public String sayCold(ResourceBundle rb) {
+        return language.encodeText(rb, "phrase.cold");
     }
 
-    public String sayHot(){
-        return "                                   «Дᴏᴄтᴀтᴏчʜᴏ тᴇплᴏ, дᴘʏг мᴏй.»";
+    public String sayBye(ResourceBundle rb) {
+        return language.encodeText(rb, "phrase.goodbye");
     }
 
-    public String sayCold(){
-        return "                                        «Cлишᴋᴏм xᴏлᴏдʜᴏ.»";
+    public String sayLost(ResourceBundle rb, int guessedValue) {
+        return language.encodeTextWithNumber(rb, "phrase.lost", guessedValue);
     }
 
-    public String sayBye(){
-        return "                                 «Tы этᴏ... 3ᴀxᴏди... Eᴄли чтᴏ...»";
+    public String sayFirstPhrase(ResourceBundle rb, int givenAttempts) {
+        return language.encodeTextWithNumber(rb, "phrase.first", givenAttempts);
     }
 
 }
