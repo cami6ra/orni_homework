@@ -6,6 +6,11 @@ public class JuniorStorekeeper extends Storekeeper{
 
     static int[] array = generateArray();
 
+    @Override
+    public void mergeSort() {
+        System.out.println("ДЖУН: «Я не умею, научишь?)))))»");
+    }
+
     //сортировка пузырьком
     public void bubbleSort(){
 

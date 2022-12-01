@@ -9,15 +9,16 @@ public class SeniorStorekeeper extends JuniorStorekeeper {
         System.out.println("*перекати-поле*");
     }
 
-    public void doMerge(){
+    @Override
+    public void mergeSort() {
         long time = System.nanoTime();
-        mergeSort(array, array.length);
+        doMerge(array, array.length);
         time = System.nanoTime() - time;
-        System.out.println("Сеньор: «Ничего без меня не можете...»\n");
+        System.out.println("СЕНЬОР: «Ничего без меня не можете...»");
         System.out.printf("Сеньор отсортировал слиянием: " + Arrays.toString(array) + " за: %,9.3f ms\n", time/1_000_000.0);
     }
 
-    public void mergeSort(int[] array, int arrayLength) {
+    public void doMerge(int[] array, int arrayLength) {
         if (arrayLength < 2) return;
 
         //делим массив на две части и объявляем размеры для новых массивов
@@ -30,8 +31,8 @@ public class SeniorStorekeeper extends JuniorStorekeeper {
         System.arraycopy(array, mid, right, 0, arrayLength - mid);
 
         //рекурсия
-        mergeSort(left, mid);
-        mergeSort(right, arrayLength - mid);
+        doMerge(left, mid);
+        doMerge(right, arrayLength - mid);
 
         merge(array, left, right, mid, arrayLength - mid);
     }

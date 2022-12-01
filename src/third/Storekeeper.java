@@ -15,4 +15,12 @@ public abstract class Storekeeper {
         return array;
     }
 
+    public void bubbleSort(){
+
+    }
+
+    public void mergeSort(){
+
+    }
+
 }
